@@ -105,8 +105,14 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut);
         boxCycle <= 0;
       else if (boxCycle == 3)
         boxCycle <= 0;
-      else
+        boxRows[0] <= boxRows[1];
+        boxRows[1] <= boxRows[2];
+        boxRows[2] <= boxRows[3];
+        boxRows[3] <= boxRows[0];
+      else if (carryout2 == 1)
         boxCycle<= boxCycle + 1;
+      else
+        boxCycle<=boxCycle;
     end
 
     assign xout = x;
