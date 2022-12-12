@@ -7,8 +7,9 @@ module a21_jiyukadai01(CLK,RSTn,xOut,yOut);
 
     reg [2:0] x;
     reg [3:0] y;
-    reg [2:0] boxRows[0:3];
+    reg [2:0] boxRows[0:4];
     reg [2:0] nowBox;
+    reg [1:0] boxCycle;
 
     reg [14:0] prescaler;
     wire carryout;
@@ -32,6 +33,8 @@ module a21_jiyukadai01(CLK,RSTn,xOut,yOut);
         boxRows[1] <= 2;
         boxRows[2] <= 3;
         boxRows[3] <= 1;
+        boxRows[4] <= 1;
+        boxCycle <= 0;
 
       end
         
@@ -43,15 +46,20 @@ module a21_jiyukadai01(CLK,RSTn,xOut,yOut);
        else begin
         
 
-       if (y%4 != 0)
+       if (y == 0 | y%4 != boxCycle)
         x <= x-1;
         else begin
-            case (y)
-                'd0 : nowBox <= 0;
-                'd4 : nowBox <= 3;
-                'd8 : nowBox <= 2;
-                'd12: nowBox <= 1; 
+          if (y == 0)
+            nowBox <= 0
+          else begin
+            case (y/4)
+                'd0 : nowBox <= 4;
+                'd1 : nowBox <= 3;
+                'd2 : nowBox <= 2;
+                'd3: nowBox <= 1; 
             endcase
+          end
+            
 
             case (boxRows[nowBox])
                 'd0: x <= 0;
