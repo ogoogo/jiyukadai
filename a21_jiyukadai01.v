@@ -1,4 +1,4 @@
-module a21_jiyukadai01(CLK,RSTn,xOut,yOut);
+module b01_jiyukadai(CLK,RSTn,xOut,yOut);
 
     input CLK;
     input RSTn;
