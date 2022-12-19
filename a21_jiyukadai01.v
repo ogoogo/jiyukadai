@@ -1,7 +1,11 @@
-module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut);
+module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut,BTN0,BTN1,BTN2,BTN3);
 
     input CLK;
     input RSTn;
+    input BTN0;
+    input BTN1;
+    input BTN2;
+    input BTN3;
     output [2:0] xOut;
     output [3:0] yOut;
     output [2:0] colorOut;
@@ -17,10 +21,6 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut);
 
     reg [21:0] prescaler2;
     wire carryout2;
-
-
-    parameter otoSource = 00001111111011111110111111101111111011111110111111100000;
-    parameter otoSizeSource = 48;
     reg [48:0] otoExist;
     reg [7:0] otoSize;
     
@@ -28,6 +28,8 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut);
     reg nowON;
 
     reg [2:0] color;
+
+    reg [1:0] zeroColor;
 
     always @ (posedge CLK or negedge RSTn) begin
       if (RSTn == 1'b0)
@@ -121,12 +123,35 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut);
         boxRows[1] <= boxRows[2];
         boxRows[2] <= boxRows[3];
         boxRows[3] <= boxRows[3];
+        zeroColor <= 0
       end
         
       else if (carryout2 == 1)
         boxCycle<= boxCycle + 1;
       else
         boxCycle<=boxCycle;
+
+      if (BTN0 == 1)begin
+        if (boxRows[0]==0 and otoExist[box0Number]==1)begin
+          zeroColor <= 1
+        end
+      end
+      if (BTN1 == 1)begin
+        if (boxRows[0]==1 and otoExist[box0Number]==1)begin
+          zeroColor <= 1
+        end
+      end
+      if (BTN2 == 1)begin
+        if (boxRows[0]==2 and otoExist[box0Number]==1)begin
+          zeroColor <= 1
+        end
+      end
+      if (BTN3 == 1)begin
+        if (boxRows[0]==3 and otoExist[box0Number]==1)begin
+          zeroColor <= 1
+        end
+      end
+
     end
 
     // 0でboxを消す
@@ -143,13 +168,21 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut);
         color <= 000
       else 
         color <= 111
+      
+      if (nowBox == 0)begin
+        if (zeroColor==1)
+          color <= 001;
+      end
 
     end
+
+    
       
     
 
   end
 
+  
 
     assign xout = x;
     assign yout = y;
