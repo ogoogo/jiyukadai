@@ -1,9 +1,10 @@
-module b01_jiyukadai(CLK,RSTn,xOut,yOut);
+module b01_jiyukadai(CLK,RSTn,xOut,yOut,colorOut);
 
     input CLK;
     input RSTn;
     output [2:0] xOut;
     output [3:0] yOut;
+    output [2:0] colorOut;
 
     reg [2:0] x;
     reg [3:0] y;
@@ -16,6 +17,17 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut);
 
     reg [21:0] prescaler2;
     wire carryout2;
+
+
+    parameter otoSource = 00001111111011111110111111101111111011111110111111100000;
+    parameter otoSizeSource = 48;
+    reg [48:0] otoExist;
+    reg [7:0] otoSize;
+    
+    reg [1:0] box0Number;
+    reg nowON;
+
+    reg [2:0] color;
 
     always @ (posedge CLK or negedge RSTn) begin
       if (RSTn == 1'b0)
@@ -103,20 +115,45 @@ module b01_jiyukadai(CLK,RSTn,xOut,yOut);
     always @(posedge CLK or negedge RSTn) begin
       if (RSTn == 1'b0)
         boxCycle <= 0;
-      else if (boxCycle == 3)
+      else if (boxCycle == 3)begin
         boxCycle <= 0;
         boxRows[0] <= boxRows[1];
         boxRows[1] <= boxRows[2];
         boxRows[2] <= boxRows[3];
-        boxRows[3] <= boxRows[0];
+        boxRows[3] <= boxRows[3];
+      end
+        
       else if (carryout2 == 1)
         boxCycle<= boxCycle + 1;
       else
         boxCycle<=boxCycle;
     end
 
+    // 0でboxを消す
+  always @ (posedge CLK or negedge RSTn) begin
+    if (RSTn == 1'b0)begin
+       boxCycle <= 0;
+       otoExist <= otoSource;
+       otoSize <= otoSizeSource;
+       color <= 000
+    end
+    else begin
+      nowOn <= otoExist[box0Number + nowBox];
+      if (nowON == 0)
+        color <= 000
+      else 
+        color <= 111
+
+    end
+      
+    
+
+  end
+
+
     assign xout = x;
     assign yout = y;
+    assign colorOut = color;
 
 
 
